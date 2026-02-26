@@ -1,0 +1,79 @@
+import {defineStore} from 'pinia';
+import axios from 'axios';
+export const useAuthStore = defineStore('auth', {
+  state: ()  => ({
+    user: null,
+    token: localStorage.getItem('token') || null,
+    isAuthenticated: false,
+    errorMessage: "",
+  }),
+  actions: {
+    async login(credentials) {
+      this.errorMessage = '';
+      try{
+        const response = await axios.post(
+          'http://localhost:8000/api/login', credentials);
+        this.token = response.data.token;
+        this.user = response.data.user;
+        this.isAuthenticated = true;
+        localStorage.setItem('token', response.data.token);
+      } catch (error) {
+        if (error.response) {
+          this.errorMessage = error.response.data.message;
+          console.log(error);
+        } else if (error.request) {
+          this.errorMessage = error.message;
+          console.log(error);
+        } else {
+          console.error(error);
+        }
+      }
+    },
+    async getUser() {
+      try {
+        const response = await axios.get(backendUrl + '/users',
+          {headers: { Authorization: 'Bearer ' + this.token
+          }});
+        this.user = response.data;
+      } catch (error) {
+        if(error.response) {
+          this.errorMessage = error.response.data.message;
+          console.log(error);
+        } else if (error.request) {
+          this.errorMessage = error.message;
+          console.log(error);
+        } else {
+          console.error(error);
+        }
+      }
+    },
+    async logout() {
+      try{
+        const response = await axios.get(backendUrl + '/logout',
+          {
+            headers: {
+              Authorization: 'Bearer ' + this.token
+            }});
+        this.errorCode = response.data.code;
+        this.errorMessage = response.data.message;
+        this.token = null;
+        this.user = null;
+        this.isAuthenticated = false;
+        localStorage.removeItem('token');
+      } catch (error) {
+        if (error.response) {
+          this.errorCode = 1;
+          this.errorMessage = error.response.data.message;
+          console.log(error);
+        } else if (error.request) {
+          this.errorCode = 2;
+          this.errorMessage = error.message;
+          console.log(error);
+        } else {
+          this.errorCode = 3;
+          console.error(error);
+        }
+      }
+    }
+  }
+})
