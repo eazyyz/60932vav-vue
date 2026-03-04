@@ -1,15 +1,18 @@
-import {defineStore} from 'pinia';
+import { defineStore } from 'pinia';
 import axios from 'axios';
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 export const useAuthStore = defineStore('auth', {
-  state: ()  => ({
+  state: () => ({
     user: null,
     token: localStorage.getItem('token') || null,
     isAuthenticated: false,
-    errorMessage: "",
+    errorMessage: null,
   }),
   actions: {
     async login(credentials) {
-      this.errorMessage = '';
+      this.errorMessage = "";
       try{
         const response = await axios.post(
           'http://localhost:8000/api/login', credentials);
@@ -18,42 +21,49 @@ export const useAuthStore = defineStore('auth', {
         this.isAuthenticated = true;
         localStorage.setItem('token', response.data.token);
       } catch (error) {
-        if (error.response) {
+        if(error.response){
           this.errorMessage = error.response.data.message;
           console.log(error);
-        } else if (error.request) {
+        }
+        else if(error.request){
           this.errorMessage = error.message;
           console.log(error);
-        } else {
-          console.error(error);
+        }
+        else{
+          console.log(error);
         }
       }
     },
-    async getUser() {
-      try {
-        const response = await axios.get(backendUrl + '/users',
-          {headers: { Authorization: 'Bearer ' + this.token
-          }});
-        this.user = response.data;
-      } catch (error) {
-        if(error.response) {
-          this.errorMessage = error.response.data.message;
-          console.log(error);
-        } else if (error.request) {
-          this.errorMessage = error.message;
-          console.log(error);
-        } else {
-          console.error(error);
-        }
-      }
-    },
-    async logout() {
+    async getUser(){
+      this.errorMessage = "";
       try{
-        const response = await axios.get(backendUrl + '/logout',
-          {
-            headers: {
-              Authorization: 'Bearer ' + this.token
-            }});
+        const response = await axios.get(backendUrl + '/user', {
+          headers: {
+            Authorization : 'Bearer ' + this.token
+          }
+        });
+        this.user = response.data;
+      } catch(error){
+        if(error.response){
+          this.errorMessage = error.response.data.message;
+          console.log(error);
+        }
+        else if(error.request){
+          this.errorMessage = error.message;
+          console.log(error);
+        }
+        else{
+          console.log(error);
+        }
+      }
+    },
+    async logout(){
+      try{
+        const response = await axios.get(backendUrl + '/logout', {
+          headers: {
+            Authorization: 'Bearer ' + this.token
+          }
+        });
         this.errorCode = response.data.code;
         this.errorMessage = response.data.message;
         this.token = null;
@@ -61,19 +71,22 @@ export const useAuthStore = defineStore('auth', {
         this.isAuthenticated = false;
         localStorage.removeItem('token');
       } catch (error) {
-        if (error.response) {
+        if(error.response){
           this.errorCode = 1;
           this.errorMessage = error.response.data.message;
           console.log(error);
-        } else if (error.request) {
+        }
+        else if(error.request){
           this.errorCode = 2;
           this.errorMessage = error.message;
           console.log(error);
-        } else {
+        }
+        else{
           this.errorCode = 3;
-          console.error(error);
+          console.log(error);
         }
       }
     }
   }
+
 })
