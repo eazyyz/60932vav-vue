@@ -9,13 +9,14 @@ export const useAuthStore = defineStore('auth', {
     token: localStorage.getItem('token') || null,
     isAuthenticated: false,
     errorMessage: null,
+    errorCode: null,
   }),
   actions: {
     async login(credentials) {
       this.errorMessage = "";
       try{
         const response = await axios.post(
-          'http://localhost:8000/api/login', credentials);
+          `${backendUrl}/login`, credentials);
         this.token = response.data.token;
         this.user = response.data.user;
         this.isAuthenticated = true;
@@ -37,7 +38,7 @@ export const useAuthStore = defineStore('auth', {
     async getUser(){
       this.errorMessage = "";
       try{
-        const response = await axios.get(backendUrl + '/user', {
+        const response = await axios.get(`${backendUrl}/user`, {
           headers: {
             Authorization : 'Bearer ' + this.token
           }
@@ -59,7 +60,7 @@ export const useAuthStore = defineStore('auth', {
     },
     async logout(){
       try{
-        const response = await axios.get(backendUrl + '/logout', {
+        const response = await axios.post(`${backendUrl}/logout`, {}, {
           headers: {
             Authorization: 'Bearer ' + this.token
           }
