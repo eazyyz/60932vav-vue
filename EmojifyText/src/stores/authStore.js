@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia';
+import {defineStore} from 'pinia';
 import axios from 'axios';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -14,7 +14,7 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async login(credentials) {
       this.errorMessage = "";
-      try{
+      try {
         const response = await axios.post(
           `${backendUrl}/login`, credentials);
         this.token = response.data.token;
@@ -22,44 +22,40 @@ export const useAuthStore = defineStore('auth', {
         this.isAuthenticated = true;
         localStorage.setItem('token', response.data.token);
       } catch (error) {
-        if(error.response){
+        if (error.response) {
           this.errorMessage = error.response.data.message;
           console.log(error);
-        }
-        else if(error.request){
+        } else if (error.request) {
           this.errorMessage = error.message;
           console.log(error);
-        }
-        else{
+        } else {
           console.log(error);
         }
       }
     },
-    async getUser(){
+    async getUser() {
       this.errorMessage = "";
-      try{
+      try {
         const response = await axios.get(`${backendUrl}/user`, {
           headers: {
-            Authorization : 'Bearer ' + this.token
+            Authorization: 'Bearer ' + this.token
           }
         });
         this.user = response.data;
-      } catch(error){
-        if(error.response){
+      } catch (error) {
+        if (error.response) {
           this.errorMessage = error.response.data.message;
           console.log(error);
-        }
-        else if(error.request){
+        } else if (error.request) {
           this.errorMessage = error.message;
           console.log(error);
-        }
-        else{
+        } else {
           console.log(error);
         }
       }
     },
-    async logout(){
-      try{
+    async logout() {
+      try {
         const response = await axios.post(`${backendUrl}/logout`, {}, {
           headers: {
             Authorization: 'Bearer ' + this.token
@@ -72,22 +68,52 @@ export const useAuthStore = defineStore('auth', {
         this.isAuthenticated = false;
         localStorage.removeItem('token');
       } catch (error) {
-        if(error.response){
+        if (error.response) {
           this.errorCode = 1;
           this.errorMessage = error.response.data.message;
           console.log(error);
-        }
-        else if(error.request){
+        } else if (error.request) {
           this.errorCode = 2;
           this.errorMessage = error.message;
           console.log(error);
-        }
-        else{
+        } else {
           this.errorCode = 3;
           console.log(error);
         }
       }
+    },
+    async uploadAvatar(file) {
+      const form = new FormData();
+      form.append("avatar", file);
+
+      try {
+        const res = await axios.post(
+          `${backendUrl}/users/${this.user.id}/avatar`,
+          form,
+          {
+            headers: {
+              Authorization: 'Bearer ' + this.token
+            }
+          }
+        );
+
+        this.user.avatar = res.data.avatar;
+
+        return res.data.avatar;
+
+      } catch (error) {
+        if (error.response) {
+          this.user.avatar = error.response.data;
+
+          this.errorMessage = error.response.data.message;
+          this.errorCode = error.response.data.code;
+        } else {
+          this.user.avatar = {
+            code: 500,
+            message: "Ошибка"
+          };
+        }
+      }
     }
   }
-
 })

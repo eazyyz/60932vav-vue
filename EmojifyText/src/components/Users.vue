@@ -1,24 +1,42 @@
 <template>
-  <div class="pt-5 p-3">
-    <DataTable
-      :value="users"
-      :lazy="true"
-      :loading="dataStore.loading"
-      :paginator="true"
-      :rows="perpage"
-      :rowsPerPageOptions="[2, 5, 10]"
-      :totalRecords=users_total
-      @page="onPageChange"
-      responsive-layout="scroll"
-      :first="offset"
-      showGridlines
-      stripedRows
-    >
-      <Column field="id" header="№" style="width: 1%"/>
-      <Column field="name" header="Имя"/>
-      <Column field="email" header="email"/>
-      <Column field="tokens_balance" header="токены" style="width: 1%"/>
-    </DataTable>
+  <div class="max-w-7xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-2xl font-bold">Все пользователи</h1>
+        <p class="text-gray-500 text-sm">
+          Список всех зарегистрированных пользователей
+        </p>
+      </div>
+      <Badge size="xlarge">
+        {{ users_total }} пользователей
+      </Badge>
+    </div>
+    <div class="bg-white shadow-md rounded-2xl p-4">
+      <DataTable
+        :value="users"
+        :lazy="true"
+        :loading="dataStore.loading"
+        :paginator="true"
+        :rows="perpage"
+        :rowsPerPageOptions="[2, 5, 10]"
+        :totalRecords="users_total"
+        @page="onPageChange"
+        responsive-layout="scroll"
+        :first="offset"
+      >
+        <Column field="id" header="№" style="width:1%"/>
+        <Column field="name" header="Имя"/>
+        <Column field="email" header="Email"/>
+        <Column field="tokens_balance" header="Токены" style="width:120px">
+          <template #body="slotProps">
+            <Badge>
+              {{ slotProps.data.tokens_balance }}
+            </Badge>
+          </template>
+        </Column>
+      </DataTable>
+    </div>
+
   </div>
 </template>
 
@@ -26,13 +44,13 @@
 </style>
 
 <script>
-import {DataTable, Column} from "primevue";
+import {DataTable, Column, Badge} from "primevue";
 import {useDataStore} from "@/stores/dataStore";
 import {storeToRefs} from 'pinia';
 
 export default {
   name: "users",
-  components: {DataTable, Column},
+  components: {DataTable, Column, Badge},
   data() {
     return {
       dataStore: useDataStore(),

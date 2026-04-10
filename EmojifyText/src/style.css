@@ -1,4 +1,22 @@
 @import './assets/base.css';
 @import "tailwindcss";
+
 @tailwind utilities;
 
+:root {
+  --p-primary-50: #f5f3ff !important;
+  --p-primary-100: #ede9fe !important;
+  --p-primary-200: #ddd6fe !important;
+  --p-primary-300: #c4b5fd !important;
+  --p-primary-400: #a78bfa !important;
+  --p-primary-500: #8b5cf6 !important;
+  --p-primary-600: #7c3aed !important;
+  --p-primary-700: #6d28d9 !important;
+  --p-primary-800: #5b21b6 !important;
+  --p-primary-900: #4c1d95 !important;
+}
+
+.p-badge {
+  color: var(--p-primary-600) !important;
+  background-color: var(--p-primary-50) !important;
+}
