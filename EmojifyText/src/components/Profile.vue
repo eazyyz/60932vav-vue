@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-7xl mx-auto">
+  <div class="max-w-7xl mx-auto" v-if="user">
     <div class="bg-white shadow-lg rounded-2xl p-4 mb-6 flex items-center justify-between">
 
       <div class="flex items-center gap-5">
@@ -33,7 +33,7 @@
         </div>
       </div>
     </div>
-    <p style="color: red"> {{ user.avatar.message }}</p>
+    <p style="color: red" v-if="user.avatar?.message"> {{ user.avatar.message }}</p>
     <div class="bg-white shadow-lg rounded-2xl p-4">
 
       <h3 class="text-xl font-semibold mb-4">
