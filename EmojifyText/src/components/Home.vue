@@ -2,7 +2,7 @@
   <div class="max-w-7xl mx-auto">
     <div class="mb-6">
       <div class="flex justify-between items-center mb-6 flex-wrap gap-3">
-
+        GH actions
         <div v-if="authStore.user"
              class="bg-white shadow-sm rounded-xl px-4 py-3">
           <span class="text-gray-500 text-sm">Ваши токены</span>
